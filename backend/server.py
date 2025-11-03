@@ -177,7 +177,8 @@ async def register(user_data: UserCreate):
         tipo=user_data.tipo
     )
     
-    doc = user.model_dump()
+    doc = user.model_dump(mode='python')
+    doc['senha_hash'] = hashed  # Adicionar senha_hash manualmente
     doc['created_at'] = doc['created_at'].isoformat()
     
     await db.users.insert_one(doc)
@@ -309,7 +310,8 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(requir
         tipo=user_data.tipo
     )
     
-    doc = user.model_dump()
+    doc = user.model_dump(mode='python')
+    doc['senha_hash'] = hashed  # Adicionar senha_hash manualmente
     doc['created_at'] = doc['created_at'].isoformat()
     
     await db.users.insert_one(doc)
