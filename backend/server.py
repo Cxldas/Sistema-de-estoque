@@ -194,7 +194,11 @@ async def register(user_data: UserCreate):
 async def login(credentials: UserLogin):
     user_doc = await db.users.find_one({"email": credentials.email})
     
-    if not user_doc or not pwd_context.verify(credentials.senha, user_doc.get("senha_hash", "")):
+    if not user_doc:
+        raise HTTPException(status_code=401, detail="Email ou senha incorretos")
+    
+    senha_hash = user_doc.get("senha_hash")
+    if not senha_hash or not pwd_context.verify(credentials.senha, senha_hash):
         raise HTTPException(status_code=401, detail="Email ou senha incorretos")
     
     token = create_access_token({"sub": user_doc["id"]})
